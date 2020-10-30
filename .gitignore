@@ -1,0 +1,6 @@
+# TexWorks
+*.log
+*.out
+*.aux
+*.synctex.gz
+*.pdf

@@ -1,0 +1,165 @@
+\documentclass{article}
+
+\usepackage[a5paper,margin=1.25cm]{geometry}
+%\setlength{\parindent}{0em}
+%\setlength{\parskip}{0.8em}
+
+\usepackage{xeCJK}
+\setCJKmainfont{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans Mono CJK SC}
+
+\usepackage[hyphens]{url}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{spverbatim}
+
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\theoremstyle{theorem}
+\newtheorem{theorem}{定理}[section]
+
+\usepackage{amssymb}
+\newcommand{\Reals}{\mathbb{R}}
+\usepackage{amsmath}
+
+\title{最优化方法讲义}
+\author{
+  魏福义\ 著
+  \and
+  吴嘉林\ 编
+}
+
+\begin{document}
+
+%\maketitle
+
+\section{运筹学, 基本概念和理论基础}
+\subsection{运筹学思想}
+
+% 除去运筹学部分
+
+\begin{definition}[优化模型的一般形式] 优化问题及其模型可以表示为以下的一般形式:
+\begin{align*}
+\begin{cases}
+  \text{opt.} \; & f(x_i, y_j, \xi_k) \\
+  \text{s.t.} \; & g_h(x_i, y_j, \xi_k) \leq 0 \; \text{, 或等于或大于等于0}\\
+                 & h = 1,2,\dots,m
+\end{cases}
+\end{align*}
+其中: \\ 称 \( x_i \) 为决策变量, 可人为调控, 亦是求解的目标; \\ 称 \( y_i \) 为已知参数; 称 \( \xi_k \) 为随机因素; \\ 称 \( g_h \dots \) 为限制条件. \\ \( f \) 和 \( g_h \) 为一般或广义函数.
+\end{definition}
+
+% 除去建模举例部分
+
+\clearpage
+
+\subsection{基本概念和符号}
+
+\begin{definition}[n元函数] 记为
+\( f(x): \Reals^n \rightarrow \Reals \)
+\end{definition}
+
+\begin{definition}[线性函数] 记为 
+\begin{align*}
+f(x) &= c^\mathsf{T}x+b \\
+     &= \sum c_i x_i + b
+\end{align*}
+\end{definition}
+
+\begin{definition}[二次函数] 记为
+\begin{align*}
+f(x) &= \frac{1}{2} x^\mathsf{T}Qx + c^\mathsf{T}x + b \\
+     &= \frac{1}{2} \sum_i \sum_j a_{ij} x_i x_j + \sum c_i x_i + b
+\end{align*}
+其中 \( Q \) 是二次型.
+\end{definition}
+
+\begin{definition}[向量值函数] 记为
+\( F(x) :\Reals^n \rightarrow \Reals^m \)
+\end{definition}
+
+\begin{definition}[向量值线性函数] 记为
+\( F(x) = A x + b \) , 其中 \( A \in \Reals^{m \times n} \), \( x \in \Reals^n \), \( F(x), d \in \Reals^m \). \\
+亦可视为 \( F(x) = (f_1(x), f_2(x), ..., f_m(x))^\mathsf{T} \), 其中 \( f_i(x) = a_i^\mathsf{T} x + d_i \), 其中 \( a_i^\mathsf{T} \) 是 \( A \) 的第 \( i \) 列向量.
+\end{definition}
+
+\begin{theorem}
+任意线性变换均可以表示为变换矩阵.
+\end{theorem}
+
+\begin{definition}[多元函数的梯度] 对于n元函数 \( f(x): \Reals^n \rightarrow \Reals \), 记其梯度为
+\( \nabla f(x) = (\frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, \dots, \frac{\partial f}{\partial x_n})^\mathsf{T} \). \\
+对于线性函数 \( f(x) = c^\mathsf{T} x + b \), 有 \( \nabla f(x) = c^\mathsf{T} \). \\
+对于二次函数 \( f(x) = x^\mathsf{T} Qx + c^\mathsf{T} x + b \), 有 \( \nabla f(x) = Qx +  c^\mathsf{T} \).
+\end{definition}
+
+\begin{definition}[向量值函数的梯度, Jacobian 矩阵] 对于向量值函数 \( F(x) :\Reals^n \rightarrow \Reals^m \), 记其梯度为
+\begin{align*}
+\nabla f(x) = \begin{bmatrix}
+  \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\
+  \vdots                            & \ddots & \vdots                            \\
+  \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n} 
+\end{bmatrix}
+\end{align*}
+对于向量值线性函数 \( f(x) = Ax + b \), 有 \( \nabla f(x) = A^\mathsf{T} \).
+\end{definition}
+
+\begin{definition}[多元函数的二阶导数, Hessian 矩阵] 对于n元函数 \( f(x): \Reals^n \rightarrow \Reals \), 记其二阶导数为:
+\begin{align*}
+\nabla^2 f(x) = \begin{bmatrix}
+  \frac{\partial f}{\partial x_1^2}            & \frac{\partial f}{\partial x_2 \partial x_1} & \cdots & \frac{\partial f}{\partial x_n \partial x_1} \\
+  \frac{\partial f}{\partial x_1 \partial x_2} & \frac{\partial f}{\partial x_2^2}            & \cdots & \frac{\partial f}{\partial x_n \partial x_2} \\
+  \vdots                                       & \vdots                                       & \ddots & \vdots                                       \\
+  \frac{\partial f}{\partial x_1 \partial x_n} & \frac{\partial f}{\partial x_2 \partial x_n} & \cdots & \frac{\partial f}{\partial x_n^2} 
+\end{bmatrix}
+\end{align*}
+对于线性函数 \( f(x) = c^\mathsf{T} x + b \), 有 \( \nabla^2 f(x) = 0^{} \). \\
+对于二次函数 \( f(x) = x^\mathsf{T} Qx + c^\mathsf{T} x + b \), 有 \( \nabla^2 f(x) = Q \).
+\end{definition}
+
+\begin{definition}[多元函数的泰勒展开] 设有n元函数 \( f(x): \Reals^n \rightarrow \Reals \), 在 \( x^* \) 的邻域内 k 阶可导, 则 f(x) 可在该邻域内展开. \\
+%\begin{align*}
+%f(x) = \sum _{n_{1}=0}^{\infty }\cdots \sum _{n_{d}=0}^{\infty }{\frac {\partial ^{n_{1}+\cdots +n_{d}}}{\partial x_{1}^{n_{1}}\cdots \partial x_{d}^{n_{d}}}}{\frac {f(a_{1},\cdots ,a_{d})}{n_{1}!\cdots n_{d}!}}(x_{1}-a_{1})^{n_{1}}\cdots (x_{d}-a_{d})^{n_{d}}
+%\end{align*}
+一阶泰勒展开式的形式为:
+\begin{align*}
+f(x) \:=\: f(x^*) \:+\: \nabla f^\mathsf{T}(x^*)(x-x^*) \:+\: o\left(\lVert x-x^*\rVert\right)
+\end{align*}
+二阶泰勒展开式的形式为:
+\begin{align*}
+f(x) \:=\: & f(x^*) \:+\: \nabla f^\mathsf{T}(x^*) (x-x^*) \\
+       & +\: \frac{1}{2} (x-x^*)^\mathsf{T} \nabla^2 f(x^*) (x-x^*) \:+\: o\left({\lVert x-x^*\rVert^2}\right)
+\end{align*}
+\end{definition}
+
+\begin{definition}[多元函数的中值公式] 设有上述之多元函数, 有 \\
+(一阶形式)
+\begin{align*}
+                  & \exists \lambda \in (0, 1), x_\lambda = x^*+\lambda(x-x^*)\\
+\text{s.t.} \; & f(x) = f(x^*) + \nabla f^\mathsf{T}(x_\lambda) (x-x^*)
+\end{align*}
+(二阶形式)
+\begin{align*}
+                  & \exists \mu \in (0, 1), x_\mu = x^*+\mu(x-x^*)\\
+\text{s.t.} \; & f(x) = f(x^*) + \nabla f^\mathsf{T}(x^*) (x-x^*) + \frac{1}{2} (x-x^*)^\mathsf{T} \nabla^2 f(x_\mu) (x-x^*)
+\end{align*}
+\end{definition}
+
+\clearpage
+
+\subsection{最优化方法的基本概念}
+
+\begin{definition}[数学规划模型的一般形式, 最优解, 最优值] 设有集合 \( S \subseteq \Reals^n \), \( f:S \rightarrow \Reals \), 记数学规划模型为
+\begin{align*}
+(f\;S) \begin{cases}
+\text{min} \:  & f(x) \\
+\text{s.t.} \: & x \in S
+\end{cases}
+\end{align*}
+其中, 称 \( f(x) \) 为目标函数, \( S \) 为约束集合, a.k.a. 可行集. \\
+设有元素 \( x^* \in S \), \( \forall x \in S \), s.t. \( f(x^*) \leq f(x)\), 称 \( x^* \) 为 \( (f\;S) \)的全局最优解(记 g.opt.), a.k.a. 最优解(记 opt.). 称函数值 \( f(x^*) \) 为 \( (f\;S) \) 的最优值. \\
+设有元素 \( x^* \in S \), 邻域\( N(x^*) \), \( \forall x \in S \cap N(x^*) \), s.t. \( f(x^*) \leq f(x)\), 称 \( x^* \) 为 \( (f\;S) \)的局部最优解(记 l.opt.). \\
+在上述定义中，当 \( x \neq x^* \) 时有严格不等式成立，则分别称 \( x^* \) 为 \( (f S) \) 的严格全局最优解或严格局部最优解。
+\end{definition}
+
+\end{document}
